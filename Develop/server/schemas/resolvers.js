@@ -7,7 +7,7 @@ const resolvers = {
             if (context.user) {
                 return User.findOne({ _id: context.user._id });
             }
-            return new AuthenticationError('You must be logged in!');
+            throw new AuthenticationError('You must be logged in!');
         },
     },
 
@@ -34,11 +34,11 @@ const resolvers = {
       
             return { token, user };
         },
-        saveBook: async (parent, args, context) => {
+        saveBook: async (parent, {input}, context) => {
             if (context.user) {
                 const user = await User.findOneAndUpdate(
                     { _id: context.user._id },
-                    { $addToSet: { savedBooks: args }},
+                    { $addToSet: { savedBooks: {...input} }},
                     { new: true, runValidators: true }
                 );
                 return user;
